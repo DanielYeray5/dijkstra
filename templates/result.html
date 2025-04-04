@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados - Algoritmo Dijkstra</title>
+</head>
+<body>
+    <h1>Resultados del Algoritmo de Dijkstra</h1>
+
+    <h2>Distancia más corta</h2>
+    <p>{{ distance }}</p>
+
+    <h2>Camino más corto</h2>
+    <p>{{ path }}</p>
+
+    <h2>Gráfico del Grafo</h2>
+    <img src="{{ url_for('static', filename=image) }}" alt="Grafo y camino más corto" style="max-width: 100%; height: auto;">
+
+    <br><br>
+    <a href="{{ url_for('index') }}">Volver al inicio</a>
+</body>
+</html>

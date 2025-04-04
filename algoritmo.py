@@ -1,6 +1,9 @@
 import heapq
 import networkx as nx
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import os
 
 def dijkstra(graph, start, end):
     # Inicializar las distancias y la cola de prioridad
@@ -35,7 +38,7 @@ def dijkstra(graph, start, end):
 
 def graficar_grafo(graph, path):
     print("Generando el grafo...")
-    G = nx.Graph()
+    G = nx.DiGraph()  # Cambiar a DiGraph para grafo dirigido
 
     # Agregar nodos y aristas al grafo
     for node, edges in graph.items():
@@ -44,54 +47,62 @@ def graficar_grafo(graph, path):
 
     pos = nx.spring_layout(G)  # Posiciones de los nodos
 
-    # Dibujar nodos y aristas
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
+    # Dibujar nodos y aristas sin flechas
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10, arrows=False)
     labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
 
-    # Resaltar el camino más corto
+    # Resaltar el camino más corto con flechas
     path_edges = list(zip(path, path[1:]))
-    nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=2)
+    nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=2, arrows=True)
 
     plt.title("Grafo y camino más corto")
 
     # Guardar el gráfico como imagen
-    plt.savefig("grafo_camino_mas_corto.png")  # Guarda la imagen en el directorio actual
-    print("El gráfico ha sido guardado como 'grafo_camino_mas_corto.png'.")
+    static_dir = "static"  # Carpeta donde se guardarán las imágenes
+    if not os.path.exists(static_dir):
+        os.makedirs(static_dir)  # Crear la carpeta si no existe
+    file_name = f"{static_dir}/grafo_camino_mas_corto.png"
 
-    plt.show()  # Mostrar la gráfica
+    plt.savefig(file_name)  # Sobrescribe la imagen existente
+    print(f"El gráfico ha sido guardado como '{file_name}'.")
+
+    plt.close()  # Cierra la figura para liberar memoria
 
 def main():
+    print("Introduce las aristas del grafo (formato: nodo1 nodo2 peso, una por línea). Escribe 'fin' para terminar:")
     graph = {}
-    print("Introduce las aristas del grafo (formato: nodo1 nodo2 peso). Escribe 'fin' para terminar:")
+
     while True:
-        edge = input("Arista: ")
-        if edge.lower() == 'fin':
+        line = input()
+        if line.lower() == 'fin':
             break
         try:
-            node1, node2, weight = edge.split()
+            node1, node2, weight = line.split()
             weight = int(weight)
+            if node1 not in graph:
+                graph[node1] = []
+            if node2 not in graph:
+                graph[node2] = []
+            graph[node1].append((node2, weight))
+            graph[node2].append((node1, weight))  # Si el grafo es dirigido, elimina esta línea.
         except ValueError:
             print("Entrada inválida. Asegúrate de usar el formato: nodo1 nodo2 peso")
-            continue
-
-        if node1 not in graph:
-            graph[node1] = []
-        if node2 not in graph:
-            graph[node2] = []
-
-        graph[node1].append((node2, weight))
-        graph[node2].append((node1, weight))  # Si el grafo es dirigido, elimina esta línea.
 
     start = input("Introduce el nodo inicial: ")
     end = input("Introduce el nodo final: ")
 
-    distance, path = dijkstra(graph, start, end)
-    print(f"La distancia más corta de {start} a {end} es {distance}")
-    print(f"El camino más corto es: {' -> '.join(path)}")
+    try:
+        distance, path = dijkstra(graph, start, end)
+        print(f"La distancia más corta de {start} a {end} es {distance}")
+        print(f"El camino más corto es: {' -> '.join(path)}")
 
-    # Graficar el grafo y el camino más corto
-    graficar_grafo(graph, path)
+        # Graficar el grafo y el camino más corto
+        graficar_grafo(graph, path)
+    except KeyError:
+        print("Uno de los nodos especificados no existe en el grafo.")
+    except Exception as e:
+        print(f"Error inesperado: {str(e)}")
 
 if __name__ == "__main__":
     main()

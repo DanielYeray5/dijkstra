@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo Dijkstra</title>
+</head>
+<body>
+    <h1>Algoritmo de Dijkstra</h1>
+    <form method="POST">
+        <label for="edges">Introduce las aristas del grafo (formato: nodo1 nodo2 peso, una por línea):</label><br>
+        <textarea id="edges" name="edges" rows="10" cols="50" required></textarea><br>
+        <small>Ejemplo:<br>A B 5<br>A C 3<br>B C 2<br>B D 4<br>C D 1</small><br><br>
+
+        <label for="start">Nodo inicial:</label>
+        <input type="text" id="start" name="start" required><br><br>
+
+        <label for="end">Nodo final:</label>
+        <input type="text" id="end" name="end" required><br><br>
+
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
